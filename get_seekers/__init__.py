@@ -1,10 +1,8 @@
 import logging
 
-import json
 from datetime import datetime
 import os
 import certifi
-from bson.json_util import ObjectId
 from pymongo import MongoClient
 
 import azure.functions as func
