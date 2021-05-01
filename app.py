@@ -44,7 +44,6 @@ def get_seeker_requests():
     all_seekers = help_seeker.find()
     seekers = []
     for seeker in all_seekers:
-
         seeker_lat = seeker["seeker_location"]["lattitude"]
         seeker_lon = seeker["seeker_location"]["longitude"]
         if min_lat <= seeker_lat <= max_lat and min_lon <= seeker_lon <= max_lon:
@@ -69,7 +68,6 @@ def get_helper_requests():
     all_helpers = help_giver.find()
     helpers = []
     for helper in all_helpers:
-
         helper_lat = helper["seeker_location"]["lattitude"]
         helper_lon = helper["seeker_location"]["longitude"]
         if min_lat <= helper_lat <= max_lat and min_lon <= helper_lon <= max_lon:
