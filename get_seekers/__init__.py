@@ -27,7 +27,7 @@ def jsonify(resp):
                 response[key] = str(value)
             else:
                 response[key]=value
-            response_list.append(response)
+        response_list.append(response)
     return str(response_list)
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
