@@ -1,6 +1,7 @@
 import logging
 
-from datetime import datetime
+import datetime
+from bson.json_util import ObjectId
 import os
 import certifi
 from pymongo import MongoClient
@@ -14,6 +15,20 @@ help_giver_collection = os.environ["help_giver_collection"]
 client = MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
 db = client[DB_NAME]
 help_giver = db[help_giver_collection]
+
+def jsonify(resp):
+    response_list = []
+    for r in resp:
+        response = {}
+        for key,value in r.items():
+            if isinstance(value,ObjectId):
+                response[key]=str(value)
+            elif isinstance(value,datetime.datetime):
+                response[key] = str(value)
+            else:
+                response[key]=value
+            response_list.append(response)
+    return str(response_list)
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Trigered app for get_helpers')
@@ -48,6 +63,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         if min_lat <= helper_lat <= max_lat and min_lon <= helper_lon <= max_lon:
             helpers.append(helper)
     return func.HttpResponse(
-        str(helpers),
+        jsonify(helpers),
         status_code=200
     )
