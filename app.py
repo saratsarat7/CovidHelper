@@ -68,8 +68,8 @@ def get_helper_requests():
     all_helpers = help_giver.find()
     helpers = []
     for helper in all_helpers:
-        helper_lat = helper["seeker_location"]["lattitude"]
-        helper_lon = helper["seeker_location"]["longitude"]
+        helper_lat = helper["helper_location"]["lattitude"]
+        helper_lon = helper["helper_location"]["longitude"]
         if min_lat <= helper_lat <= max_lat and min_lon <= helper_lon <= max_lon:
             helpers.append(helper)
     return jsonify(helpers)
@@ -82,7 +82,7 @@ def create_seeker_request():
     request_body['seeker_location']["longitude"] = round(request_body['seeker_location']["longitude"], 6)
     request_body['seeker_location']["lattitude"] = round(request_body['seeker_location']["lattitude"], 6)
     request_body['date_time'] = datetime.now()
-    res = help_seeker.insert_one(data).inserted_id
+    res = help_seeker.insert_one(request_body).inserted_id
     return jsonify(request_body)
 
 
@@ -91,7 +91,7 @@ def create_giver_request():
     data = request.json
     request_body = filter_body(create_helper_request_body, data)
     request_body['date_time'] = datetime.now()
-    res = help_giver.insert_one(data).inserted_id
+    res = help_giver.insert_one(request_body).inserted_id
     return jsonify(request_body)
 
 
