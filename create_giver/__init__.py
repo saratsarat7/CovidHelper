@@ -23,7 +23,8 @@ create_helper_request_body = {
         "longitude": "",
         "lattitude": ""
     },
-    "helper_area": ""
+    "helper_area": "",
+    "device_id":""
 }
 
 def filter_body(expected_body, ui_body):
