@@ -55,7 +55,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     max_lon = round(long + (lo * distance), 6)
     min_lon = round(long - (lo * distance), 6)
 
-    all_seekers = help_seeker.find()
+    all_seekers = help_seeker.find().sort("date_time", -1)
     seekers = []
     for seeker in all_seekers:
         seeker_lat = float(seeker["seeker_location"]["lattitude"])
