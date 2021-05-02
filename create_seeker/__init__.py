@@ -24,7 +24,8 @@ create_seeker_request_body = {
         "lattitude": ""
     },
     "seeker_area": "",
-    "comments": []
+    "comments": [],
+    "device_id":""
 }
 
 def filter_body(expected_body, ui_body):
