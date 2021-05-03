@@ -32,37 +32,46 @@ def jsonify(resp):
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Trigered app for get_seekers')
-
-    long = req.params.get('long')
-    lat = req.params.get('lat')
-    distance = req.params.get('dist')
     
-    if (not long) or (not lat) or (not distance):
+    if req.params.get('device_id') is not None:
+        device_id=req.params.get('device_id')
+        seekers = help_seeker.find_one({"device_id":device_id})
+        client.close()
         return func.HttpResponse(
-            "Resquest parms not complete send all query parms.",
-            status_code=301
-        )
-
-    # Convert request value to float/int Type
-    long = float(long)
-    lat = float(lat)
-    distance = int(distance)
-    
-    la = 0.004963
-    lo = 0.003965
-    max_lat = round(lat + (la * distance), 6)
-    min_lat = round(lat - (la * distance), 6)
-    max_lon = round(long + (lo * distance), 6)
-    min_lon = round(long - (lo * distance), 6)
-
-    all_seekers = help_seeker.find()
-    seekers = []
-    for seeker in all_seekers:
-        seeker_lat = float(seeker["seeker_location"]["lattitude"])
-        seeker_lon = float(seeker["seeker_location"]["longitude"])
-        if min_lat <= seeker_lat <= max_lat and min_lon <= seeker_lon <= max_lon:
-            seekers.append(seeker)
-    return func.HttpResponse(
         jsonify(seekers),
-        status_code=200
-    )
+        status_code=200)
+    else:
+        long = req.params.get('long')
+        lat = req.params.get('lat')
+        distance = req.params.get('dist')
+
+        if (not long) or (not lat) or (not distance):
+            return func.HttpResponse(
+                "Resquest parms not complete send all query parms.",
+                status_code=301
+            )
+
+        # Convert request value to float/int Type
+        long = float(long)
+        lat = float(lat)
+        distance = int(distance)
+
+        la = 0.004963
+        lo = 0.003965
+        max_lat = round(lat + (la * distance), 6)
+        min_lat = round(lat - (la * distance), 6)
+        max_lon = round(long + (lo * distance), 6)
+        min_lon = round(long - (lo * distance), 6)
+
+        all_seekers = help_seeker.find().sort("date_time", -1)
+        seekers = []
+        for seeker in all_seekers:
+            seeker_lat = float(seeker["seeker_location"]["lattitude"])
+            seeker_lon = float(seeker["seeker_location"]["longitude"])
+            if min_lat <= seeker_lat <= max_lat and min_lon <= seeker_lon <= max_lon:
+                seekers.append(seeker)
+        client.close()
+        return func.HttpResponse(
+            jsonify(seekers),
+            status_code=200
+        )
