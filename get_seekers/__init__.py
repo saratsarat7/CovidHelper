@@ -35,7 +35,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     
     if req.params.get('device_id') is not None:
         device_id=req.params.get('device_id')
-        
         seekers = help_seeker.find({"device_id":device_id})
         all_seekers=[]
         for seeker in seekers:
