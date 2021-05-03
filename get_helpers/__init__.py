@@ -35,10 +35,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     
     if req.params.get('device_id') is not None:
         device_id=req.params.get('device_id')
-        seekers = help_seeker.find_one({"device_id":device_id})
+
+        helpers = help_giver.find({"device_id":device_id})
+        all_helpers=[]
+        for helper in helpers:
+            all_helpers.append(helper)
+            
         client.close()
         return func.HttpResponse(
-        jsonify(seekers),
+        jsonify(all_helpers),
         status_code=200)
     else:
         long = req.params.get('long')
