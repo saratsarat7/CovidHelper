@@ -32,37 +32,46 @@ def jsonify(resp):
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Trigered app for get_helpers')
-
-    long = req.params.get('long')
-    lat = req.params.get('lat')
-    distance = req.params.get('dist')
     
-    if (not long) or (not lat) or (not distance):
+    if req.params.get('device_id') is not None:
+        device_id=req.params.get('device_id')
+        seekers = help_seeker.find_one({"device_id":device_id})
+        client.close()
         return func.HttpResponse(
-            "Resquest parms not complete send all query parms.",
-            status_code=301
+        jsonify(seekers),
+        status_code=200)
+    else:
+        long = req.params.get('long')
+        lat = req.params.get('lat')
+        distance = req.params.get('dist')
+
+        if (not long) or (not lat) or (not distance):
+            return func.HttpResponse(
+                "Resquest parms not complete send all query parms.",
+                status_code=301
+            )
+
+        # Convert request value to float/int Type
+        long = float(long)
+        lat = float(lat)
+        distance = int(distance)
+
+        la = 0.004963
+        lo = 0.003965
+        max_lat = round(lat + (la * distance), 6)
+        min_lat = round(lat - (la * distance), 6)
+        max_lon = round(long + (lo * distance), 6)
+        min_lon = round(long - (lo * distance), 6)
+
+        all_helpers = help_giver.find().sort("date_time", -1)
+        helpers = []
+        for helper in all_helpers:
+            helper_lat = float(helper["helper_location"]["lattitude"])
+            helper_lon = float(helper["helper_location"]["longitude"])
+            if min_lat <= helper_lat <= max_lat and min_lon <= helper_lon <= max_lon:
+                helpers.append(helper)
+        client.close()
+        return func.HttpResponse(
+            jsonify(helpers),
+            status_code=200
         )
-
-    # Convert request value to float/int Type
-    long = float(long)
-    lat = float(lat)
-    distance = int(distance)
-    
-    la = 0.004963
-    lo = 0.003965
-    max_lat = round(lat + (la * distance), 6)
-    min_lat = round(lat - (la * distance), 6)
-    max_lon = round(long + (lo * distance), 6)
-    min_lon = round(long - (lo * distance), 6)
-
-    all_helpers = help_giver.find().sort("date_time", -1)
-    helpers = []
-    for helper in all_helpers:
-        helper_lat = float(helper["helper_location"]["lattitude"])
-        helper_lon = float(helper["helper_location"]["longitude"])
-        if min_lat <= helper_lat <= max_lat and min_lon <= helper_lon <= max_lon:
-            helpers.append(helper)
-    return func.HttpResponse(
-        jsonify(helpers),
-        status_code=200
-    )
