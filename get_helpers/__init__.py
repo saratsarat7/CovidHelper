@@ -35,11 +35,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     
     if req.params.get('device_id') is not None:
         device_id=req.params.get('device_id')
-        seekers = help_seeker.find_one({"device_id":device_id})
+        helpers = help_giver.find_one({"device_id":device_id})
         client.close()
         return func.HttpResponse(
-        jsonify(seekers),
-        status_code=200)
+            jsonify(helpers),
+            status_code=200
+        )
     else:
         long = req.params.get('long')
         lat = req.params.get('lat')

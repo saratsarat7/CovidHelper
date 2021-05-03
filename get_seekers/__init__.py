@@ -38,8 +38,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         seekers = help_seeker.find_one({"device_id":device_id})
         client.close()
         return func.HttpResponse(
-        jsonify(seekers),
-        status_code=200)
+            jsonify(seekers),
+            status_code=200
+        )
     else:
         long = req.params.get('long')
         lat = req.params.get('lat')
