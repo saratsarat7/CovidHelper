@@ -1,5 +1,6 @@
 import logging
-
+import geopy
+from geopy import distance
 import datetime
 from bson.json_util import ObjectId
 import os
@@ -55,18 +56,29 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 status_code=301
             )
 
+        
+        
+        
         # Convert request value to float/int Type
         long = float(long)
         lat = float(lat)
         distance = int(distance)
+        
+        pt = geopy.Point(latitude=lat, longitude=long)
+        d = geopy.distance.distance(kilometers=distance)
 
-        la = 0.004963
-        lo = 0.003965
-        max_lat = round(lat + (la * distance), 6)
-        min_lat = round(lat - (la * distance), 6)
-        max_lon = round(long + (lo * distance), 6)
-        min_lon = round(long - (lo * distance), 6)
+        max_lat = float(d.destination(point=pt, bearing=0).format_decimal().split(",")[0])
+        min_lat = float(d.destination(point=pt, bearing=180).format_decimal().split(",")[0])
+        max_lon = float(d.destination(point=pt, bearing=90).format_decimal().split(",")[1])
+        min_lon = float(d.destination(point=pt, bearing=270).format_decimal().split(",")[1])
 
+#         la = 0.004963
+#         lo = 0.003965
+#         max_lat = round(lat + (la * distance), 6)
+#         min_lat = round(lat - (la * distance), 6)
+#         max_lon = round(long + (lo * distance), 6)
+#         min_lon = round(long - (lo * distance), 6)
+        
         all_helpers = help_giver.find().sort("date_time", -1)
         helpers = []
         for helper in all_helpers:
