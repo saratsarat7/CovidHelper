@@ -1,5 +1,5 @@
 import logging
-
+import pytz
 from datetime import datetime
 import os
 import certifi
@@ -10,6 +10,7 @@ import azure.functions as func
 DB_NAME = os.environ["DB_NAME"]
 MONGO_CONNECTION = os.environ["MONGO_CONNECTION"]
 help_seeker_collection = os.environ["help_seeker_collection"]
+tz_NY = pytz.timezone('Asia/Kolkata')
 
 client = MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
 db = client[DB_NAME]
@@ -55,7 +56,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             request_body = filter_body(create_seeker_request_body, req_body)
             request_body['seeker_location']["longitude"] = round(request_body['seeker_location']["longitude"], 6)
             request_body['seeker_location']["lattitude"] = round(request_body['seeker_location']["lattitude"], 6)
-            request_body['date_time'] = datetime.now()
+            datetime_NY = datetime.now(tz_NY)
+            date_time=datetime_NY.strftime("%Y-%m-%d %H:%M:%S")
+            request_body['date_time'] = date_time
             object_ID = help_seeker.insert_one(request_body).inserted_id
             return func.HttpResponse(
                 f"Success {object_ID}",
