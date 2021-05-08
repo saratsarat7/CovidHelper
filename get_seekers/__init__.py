@@ -69,13 +69,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         max_lon = float(d.destination(point=pt, bearing=90).format_decimal().split(",")[1])
         min_lon = float(d.destination(point=pt, bearing=270).format_decimal().split(",")[1])
 
-#         la = 0.004963
-#         lo = 0.003965
-#         max_lat = round(lat + (la * distance), 6)
-#         min_lat = round(lat - (la * distance), 6)
-#         max_lon = round(long + (lo * distance), 6)
-#         min_lon = round(long - (lo * distance), 6)
-
         all_seekers = help_seeker.find().sort("date_time", -1)
         seekers = []
         for seeker in all_seekers:
